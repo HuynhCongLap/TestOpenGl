@@ -1,0 +1,9 @@
+<RCC>
+  <qresource>
+    <file>qtlogo.png</file>
+    <file>fragmentShaderSource.glsl</file>
+    <file>vertexShaderSource.glsl</file>
+    <file>fragmentShaderSourceMODDED.glsl</file>
+    <file>vertexShaderSourceMODDED.glsl</file>
+  </qresource>
+</RCC>
