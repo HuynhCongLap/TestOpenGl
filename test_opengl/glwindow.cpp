@@ -74,7 +74,7 @@ GLWindow::GLWindow()
 {
     m_world.setToIdentity();
     m_world.translate(0, 0, -1);
-    m_world.rotate(180, 1, 0, 0);
+
 
     QSequentialAnimationGroup *animGroup = new QSequentialAnimationGroup(this);
     animGroup->setLoopCount(-1);
@@ -303,15 +303,16 @@ void GLWindow::paintGL()
         camera.lookAt(m_eye, m_eye + m_target, QVector3D(0, 1, 0));
         m_program->setUniformValue(m_projMatrixLoc, m_proj);
         m_program->setUniformValue(m_camMatrixLoc, camera);
-        QMatrix4x4 wm = m_world;
+        QMatrix4x4 wm;
+        QMatrix4x4 test;
 #ifndef MODDED
-        wm.rotate(m_r, 1, 1, 0);
+        wm.rotate(45, 1, 0, 0);
 #endif
         m_program->setUniformValue(m_worldMatrixLoc, wm);
         QMatrix4x4 mm;
         mm.setToIdentity();
 #ifndef MODDED
-        mm.rotate(-m_r2, 1, 0, 0);
+        mm.setToIdentity();
 #endif
         m_program->setUniformValue(m_myMatrixLoc, mm);
         m_program->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));

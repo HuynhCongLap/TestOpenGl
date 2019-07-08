@@ -54,8 +54,24 @@
 #include <qopengl.h>
 #include <QVector>
 #include <QVector3D>
-
+#include <QVector2D>
+#include <QFile>
+#include <QRegularExpression>
+#include <QDebug>
+#include <QCoreApplication>
 // #define MODDED
+struct QOpenGLTriangle3D
+{
+    QVector3D p1;
+    QVector3D p2;
+    QVector3D p3;
+    QVector3D p1Normal;
+    QVector3D p2Normal;
+    QVector3D p3Normal;
+    QVector2D p1UV;
+    QVector2D p2UV;
+    QVector2D p3UV;
+};
 
 class Logo
 {
@@ -72,6 +88,8 @@ private:
 
     QVector<GLfloat> m_data;
     int m_count;
+    QStringList comments;
+    QVector<QOpenGLTriangle3D> triangles;
 };
 
 #endif // LOGO_H

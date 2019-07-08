@@ -51,56 +51,113 @@
 #include "logo.h"
 #include <qmath.h>
 
+void parseObjFile(const QString& fileName,
+    QStringList& comments,
+    QVector<QOpenGLTriangle3D>& triangles)
+{
+    comments.clear();
+    triangles.clear();
+
+    QFile file(fileName);
+    if (file.exists())
+    {
+        if (file.open(QFile::ReadOnly | QFile::Text))
+        {
+            QVector<QVector3D> v, vn;
+            QVector<QVector2D> vt;
+
+            while (!file.atEnd())
+            {
+                QString line = file.readLine().trimmed();
+                QStringList lineParts = line.split(QRegularExpression("\\s+"));
+                if (lineParts.count() > 0)
+                {
+
+                    // if it's a comment
+                    if (lineParts.at(0).compare("#", Qt::CaseInsensitive) == 0)
+                    {
+                        comments.append(line.remove(0, 1).trimmed());
+                    }
+
+                    // if it's a vertex position (v)
+                    else if (lineParts.at(0).compare("v", Qt::CaseInsensitive) == 0)
+                    {
+                        v.append(QVector3D(lineParts.at(1).toFloat(),
+                            lineParts.at(2).toFloat(),
+                            lineParts.at(3).toFloat()));
+                    }
+
+                    // if it's a normal (vn)
+                    else if (lineParts.at(0).compare("vn", Qt::CaseInsensitive) == 0)
+                    {
+                        vn.append(QVector3D(lineParts.at(1).toFloat(),
+                            lineParts.at(2).toFloat(),
+                            lineParts.at(3).toFloat()));
+                    }
+
+                    // if it's a texture (vt)
+                    else if (lineParts.at(0).compare("vt", Qt::CaseInsensitive) == 0)
+                    {
+                        vt.append(QVector2D(lineParts.at(1).toFloat(),
+                            lineParts.at(2).toFloat()));
+                    }
+
+                    // if it's face data (f)
+                    // there's an assumption here that faces are all triangles
+                    else if (lineParts.at(0).compare("f", Qt::CaseInsensitive) == 0)
+                    {
+                        QOpenGLTriangle3D triangle;
+
+                        // get points from v array
+                        triangle.p1 = v.at(lineParts.at(1).split("/").at(0).toInt() - 1);
+                        triangle.p2 = v.at(lineParts.at(2).split("/").at(0).toInt() - 1);
+                        triangle.p3 = v.at(lineParts.at(3).split("/").at(0).toInt() - 1);
+
+                        if (vt.count() > 0) // check if really there are any UV coords
+                        {
+                            triangle.p1UV = vt.at(lineParts.at(1).split("/").at(1).toInt() - 1);
+                            triangle.p2UV = vt.at(lineParts.at(2).split("/").at(1).toInt() - 1);
+                            triangle.p3UV = vt.at(lineParts.at(3).split("/").at(1).toInt() - 1);
+                        }
+
+                        // get normals from vn array
+                        triangle.p1Normal = vn.at(lineParts.at(1).split("/").at(2).toInt() - 1);
+                        triangle.p2Normal = vn.at(lineParts.at(2).split("/").at(2).toInt() - 1);
+                        triangle.p3Normal = vn.at(lineParts.at(3).split("/").at(2).toInt() - 1);
+
+                        triangles.append(triangle);
+                    }
+
+                }
+            }
+
+            file.close();
+        }
+    }
+}
+
+
 Logo::Logo()
     : m_count(0)
 {
 #ifndef MODDED
-    m_data.resize(2500 * 6);
+    qDebug("Log Modded ");
 
-    const GLfloat x1 = +0.06f;
-    const GLfloat y1 = -0.14f;
-    const GLfloat x2 = +0.14f;
-    const GLfloat y2 = -0.06f;
-    const GLfloat x3 = +0.08f;
-    const GLfloat y3 = +0.00f;
-    const GLfloat x4 = +0.30f;
-    const GLfloat y4 = +0.22f;
-
-    quad(x1, y1, x2, y2, y2, x2, y1, x1);
-    quad(x3, y3, x4, y4, y4, x4, y3, x3);
-
-    extrude(x1, y1, x2, y2);
-    extrude(x2, y2, y2, x2);
-    extrude(y2, x2, y1, x1);
-    extrude(y1, x1, x1, y1);
-    extrude(x3, y3, x4, y4);
-    extrude(x4, y4, y4, x4);
-    extrude(y4, x4, y3, x3);
-
-    const int NumSectors = 100;
-
-    for (int i = 0; i < NumSectors; ++i) {
-        GLfloat angle = (i * 2 * M_PI) / NumSectors;
-        GLfloat angleSin = qSin(angle);
-        GLfloat angleCos = qCos(angle);
-        const GLfloat x5 = 0.30f * angleSin;
-        const GLfloat y5 = 0.30f * angleCos;
-        const GLfloat x6 = 0.20f * angleSin;
-        const GLfloat y6 = 0.20f * angleCos;
-
-        angle = ((i + 1) * 2 * M_PI) / NumSectors;
-        angleSin = qSin(angle);
-        angleCos = qCos(angle);
-        const GLfloat x7 = 0.20f * angleSin;
-        const GLfloat y7 = 0.20f * angleCos;
-        const GLfloat x8 = 0.30f * angleSin;
-        const GLfloat y8 = 0.30f * angleCos;
-
-        quad(x5, y5, x6, y6, x7, y7, x8, y8);
-
-        extrude(x6, y6, x7, y7);
-        extrude(x8, y8, x5, y5);
+    qDebug("***********************");
+    QString fEmp = QCoreApplication::applicationDirPath() + "/Cap2.obj";
+    parseObjFile(fEmp,comments, triangles);
+    qDebug() << fEmp;
+    qDebug() << comments.size();
+    qDebug() << triangles.size();
+    m_data.resize( triangles.size()*3 * 6);
+    for(int i=0; i<triangles.size(); i++)
+    {
+          add(triangles[i].p1, triangles[i].p1Normal);
+          add(triangles[i].p2, triangles[i].p2Normal);
+          add(triangles[i].p3, triangles[i].p3Normal);
     }
+    qDebug("***********************");
+
 #else
     m_data.resize(12 * 6);
 

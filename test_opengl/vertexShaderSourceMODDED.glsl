@@ -1,4 +1,9 @@
 #version 300 es
+#undef lowp
+#undef mediump
+#undef highp
+
+precision mediump float;
 
 layout(location = 0) in vec4 vertex;
 layout(location = 1) in vec3 normal;
@@ -19,6 +24,9 @@ void main() {
     float val = 2.0 * length(texelFetch(sampler, pos, 0).rgb);
     mat4 wm = myMatrix * mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, t.x, t.y, val, 1) * worldMatrix;
     color = texelFetch(sampler, pos, 0).rgb * vec3(0.4, 1.0, 0.0);
+    
+    if(vertex.x >= 0.04 ||vertex.x <= -0.04)
+	 color = vec3(1.0, 1.0, 1.0);
     vert = vec3(wm * vertex);
     vertNormal = mat3(transpose(inverse(wm))) * normal;
     gl_Position = projMatrix * camMatrix * wm * vertex;

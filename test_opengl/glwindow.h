@@ -107,6 +107,7 @@ private:
     int m_tLoc;
     QMatrix4x4 m_proj;
     QMatrix4x4 m_world;
+
     QVector3D m_eye;
     QVector3D m_target;
     bool m_uniformsDirty;

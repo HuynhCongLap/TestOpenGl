@@ -1,5 +1,9 @@
 #version 300 es
+#undef lowp
+#undef mediump
+#undef highp
 
+precision mediump float;
 in highp vec3 vert;
 in highp vec3 vertNormal;
 in highp vec3 color;
