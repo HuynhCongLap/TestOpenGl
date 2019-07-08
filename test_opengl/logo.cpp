@@ -144,7 +144,7 @@ Logo::Logo()
     qDebug("Log Modded ");
 
     qDebug("***********************");
-    QString fEmp = QCoreApplication::applicationDirPath() + "/Cap2.obj";
+    QString fEmp = QCoreApplication::applicationDirPath() + "/../test_opengl/Cap3.obj";
     parseObjFile(fEmp,comments, triangles);
     qDebug() << fEmp;
     qDebug() << comments.size();

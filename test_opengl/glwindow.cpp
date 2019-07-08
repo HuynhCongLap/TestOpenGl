@@ -78,6 +78,9 @@ GLWindow::GLWindow()
 
     QSequentialAnimationGroup *animGroup = new QSequentialAnimationGroup(this);
     animGroup->setLoopCount(-1);
+    QSequentialAnimationGroup *animGroup2 = new QSequentialAnimationGroup(this);
+    animGroup2->setLoopCount(-1);
+
     QPropertyAnimation *zAnim0 = new QPropertyAnimation(this, QByteArrayLiteral("z"));
     zAnim0->setStartValue(1.5f);
     zAnim0->setEndValue(10.0f);
@@ -97,11 +100,18 @@ GLWindow::GLWindow()
     animGroup->start();
 
     QPropertyAnimation* rAnim = new QPropertyAnimation(this, QByteArrayLiteral("r"));
-    rAnim->setStartValue(0.0f);
-    rAnim->setEndValue(360.0f);
-    rAnim->setDuration(2000);
-    rAnim->setLoopCount(-1);
-    rAnim->start();
+    rAnim->setStartValue(-35.0f);
+    rAnim->setEndValue(35.0f);
+    rAnim->setDuration(500);
+    animGroup2->addAnimation(rAnim);
+
+
+    QPropertyAnimation* rAnim2 = new QPropertyAnimation(this, QByteArrayLiteral("r"));
+    rAnim2->setStartValue(35.0f);
+    rAnim2->setEndValue(-35.0f);
+    rAnim2->setDuration(500);
+    animGroup2->addAnimation(rAnim2);
+    animGroup2->start();
 
     QPropertyAnimation* rAnimT = new QPropertyAnimation(this, QByteArrayLiteral("t"));
     rAnimT->setStartValue(0.0f);
@@ -246,6 +256,7 @@ void GLWindow::initializeGL()
     m_worldMatrixLoc = m_program->uniformLocation("worldMatrix");
     m_myMatrixLoc = m_program->uniformLocation("myMatrix");
     m_lightPosLoc = m_program->uniformLocation("lightPos");
+
 #ifdef MODDED
     m_tLoc = m_program->uniformLocation("time");
 #endif
@@ -304,9 +315,8 @@ void GLWindow::paintGL()
         m_program->setUniformValue(m_projMatrixLoc, m_proj);
         m_program->setUniformValue(m_camMatrixLoc, camera);
         QMatrix4x4 wm;
-        QMatrix4x4 test;
 #ifndef MODDED
-        wm.rotate(45, 1, 0, 0);
+        wm.rotate(m_r, QVector3D(1,0,0));
 #endif
         m_program->setUniformValue(m_worldMatrixLoc, wm);
         QMatrix4x4 mm;
